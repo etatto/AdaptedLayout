@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="browser_fragments_padding_right">0.0dip</dimen>
+    <dimen name="browser_fragments_padding_bottom">0.0dip</dimen>
+</resources>
