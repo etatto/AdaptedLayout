@@ -1,5 +1,15 @@
 <resources>
 
+	<!-- Mod Information -->
     <string name="app_name">Adapted Layout for Xperia apps</string>
-
+	<string name="xposed_description">Adapted Layout with hidden soft keys for Xperia apps.</string>
+    
+    <!-- Preference Screen -->
+	<string name="pref_options_title">Options</string>
+	<string name="pref_enable_album">Album</string>
+	<string name="pref_enable_music">WALKMAN</string>
+	<string name="pref_enable_video">Movies</string>
+	<string name="pref_enable_gb_ed_support_title">Enable GravityBox Expanded Desktop Support</string>
+	<string name="pref_enable_logging_title">Enable logging</string>
+				
 </resources>
