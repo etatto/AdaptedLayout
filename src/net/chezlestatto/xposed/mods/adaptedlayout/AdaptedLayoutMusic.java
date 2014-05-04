@@ -23,6 +23,7 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
 	// music view class, method & id
 	public static final String HK_CLASS_NAME_1 = HK_PACKAGE_NAME + ".cv";
 	public static final String HK_METHOD_NAME_11 = "a";
+	public static final int NAV_BAR_SHADE_ID = 0x7f0e00dc;
 	public static final int CONTENT_ID = 0x7f0e00da;
 	public static final int MINI_PLAYER_ID = 0x7f0e00db;
 	
@@ -86,34 +87,51 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
 
                 	Activity activity = (Activity) XposedHelpers.getObjectField(param.thisObject, "a");
 
-                	// content layout
-       				View content =  activity.findViewById(CONTENT_ID);
-       				ViewGroup.MarginLayoutParams contentMLP = (ViewGroup.MarginLayoutParams) content.getLayoutParams();
-   					log("(b) content.rightMargin: " + contentMLP.rightMargin);
-       				if (contentMLP.rightMargin != 0) {
-       					contentMLP.rightMargin = 0;
-           				content.setLayoutParams(contentMLP);
-           				contentMLP = (ViewGroup.MarginLayoutParams) content.getLayoutParams();
+        			// nav_bar_shade view
+       				View navBarShade = activity.findViewById(NAV_BAR_SHADE_ID);
+       				if (navBarShade != null) {
+           				navBarShade.setVisibility(View.GONE);
+           				log("nav_bar_shade view hidden!");
+       				} else {
+        				log("nav_bar_shade view not found!");
        				}
-   					log("(a) content.rightMargin: " + contentMLP.rightMargin);
+
+        			// content layout
+       				View content =  activity.findViewById(CONTENT_ID);
+       				if (content != null) {
+       					ViewGroup.MarginLayoutParams contentMLP = (ViewGroup.MarginLayoutParams) content.getLayoutParams();
+       					log("(b) content.rightMargin: " + contentMLP.rightMargin);
+       					if (contentMLP.rightMargin != 0) {
+       						contentMLP.rightMargin = 0;
+       						content.setLayoutParams(contentMLP);
+       						contentMLP = (ViewGroup.MarginLayoutParams) content.getLayoutParams();
+       					}
+       					log("(a) content.rightMargin: " + contentMLP.rightMargin);
+       				} else {
+        				log("content view not found!");
+       				}
         		
        				// mini_player layout
        				View miniPlayer =  activity.findViewById(MINI_PLAYER_ID);
-       				ViewGroup.MarginLayoutParams miniPlayerMLP = (ViewGroup.MarginLayoutParams) miniPlayer.getLayoutParams();
-					log("(b) mini_player.bottomMargin: " + miniPlayerMLP.bottomMargin);
-					log("(b) mini_player.rightMargin: " + miniPlayerMLP.rightMargin);
-       				if ((miniPlayerMLP.bottomMargin != 0) || (miniPlayerMLP.rightMargin != 0)) {
-       					if (miniPlayerMLP.bottomMargin != 0) {
-       						miniPlayerMLP.bottomMargin = 0;
+       				if (miniPlayer != null) {
+       					ViewGroup.MarginLayoutParams miniPlayerMLP = (ViewGroup.MarginLayoutParams) miniPlayer.getLayoutParams();
+       					log("(b) mini_player.bottomMargin: " + miniPlayerMLP.bottomMargin);
+       					log("(b) mini_player.rightMargin: " + miniPlayerMLP.rightMargin);
+       					if ((miniPlayerMLP.bottomMargin != 0) || (miniPlayerMLP.rightMargin != 0)) {
+       						if (miniPlayerMLP.bottomMargin != 0) {
+       							miniPlayerMLP.bottomMargin = 0;
+       						}
+       						if (miniPlayerMLP.rightMargin != 0) {
+       							miniPlayerMLP.rightMargin = 0;
+       						}
+       						miniPlayer.setLayoutParams(miniPlayerMLP);
+       						miniPlayerMLP = (ViewGroup.MarginLayoutParams) miniPlayer.getLayoutParams();
        					}
-       					if (miniPlayerMLP.rightMargin != 0) {
-       						miniPlayerMLP.rightMargin = 0;
-       					}
-       					miniPlayer.setLayoutParams(miniPlayerMLP);
-           				miniPlayerMLP = (ViewGroup.MarginLayoutParams) miniPlayer.getLayoutParams();
+       					log("(a) mini_player.bottomMargin: " + miniPlayerMLP.bottomMargin);
+       					log("(a) mini_player.rightMargin: " + miniPlayerMLP.rightMargin);
+       				} else {
+        				log("mini_player view not found!");
        				}
-					log("(a) mini_player.bottomMargin: " + miniPlayerMLP.bottomMargin);
-					log("(a) mini_player.rightMargin: " + miniPlayerMLP.rightMargin);
 
         		}
 
@@ -140,35 +158,47 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
         		if (adaptMusicLayout) {
 
         			// view
-        			View view = (View) XposedHelpers.callMethod(param.thisObject, "getView");
-       				ViewGroup.MarginLayoutParams viewMLP = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-					log("(b) view.bottomMargin: " + viewMLP.bottomMargin);
-					log("(b) view.rightMargin: " + viewMLP.rightMargin);
-        			// player_album_art_view_group view
-       				View playerAlbumArtViewGroup =  view.findViewById(PLAYER_ALBUM_ART_VIEW_GROUP_ID);
-       				ViewGroup.MarginLayoutParams playerAlbumArtViewGroupMLP = (ViewGroup.MarginLayoutParams) playerAlbumArtViewGroup.getLayoutParams();
-       				log("(b) player_album_art_view_group.height: " + playerAlbumArtViewGroupMLP.height);
-       				if ((viewMLP.bottomMargin != 0) || (viewMLP.rightMargin != 0)) {
-       					if (viewMLP.bottomMargin != 0) {
+        			View view = null;
+        			try {
+        				view = (View) XposedHelpers.callMethod(param.thisObject, "getView");
+        			} catch (Exception e) {
+        			}
+        			if (view != null) {
+        				ViewGroup.MarginLayoutParams viewMLP = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        				log("(b) view.bottomMargin: " + viewMLP.bottomMargin);
+        				log("(b) view.rightMargin: " + viewMLP.rightMargin);
+        				// player_album_art_view_group view
+        				View playerAlbumArtViewGroup =  view.findViewById(PLAYER_ALBUM_ART_VIEW_GROUP_ID);
+        				if (playerAlbumArtViewGroup != null) {
+        					ViewGroup.MarginLayoutParams playerAlbumArtViewGroupMLP = (ViewGroup.MarginLayoutParams) playerAlbumArtViewGroup.getLayoutParams();
+        					log("(b) player_album_art_view_group.height: " + playerAlbumArtViewGroupMLP.height);
+        					if ((viewMLP.bottomMargin != 0) || (viewMLP.rightMargin != 0)) {
+        						if (viewMLP.bottomMargin != 0) {
 
-       	       				if (playerAlbumArtViewGroupOriginalHeight > 0) {
-       	       					playerAlbumArtViewGroupMLP.height = playerAlbumArtViewGroupOriginalHeight + viewMLP.bottomMargin;
-       	       					playerAlbumArtViewGroup.setLayoutParams(playerAlbumArtViewGroupMLP);
-           	       				playerAlbumArtViewGroupMLP = (ViewGroup.MarginLayoutParams) playerAlbumArtViewGroup.getLayoutParams();
-       	       				}
+        							if (playerAlbumArtViewGroupOriginalHeight > 0) {
+        								playerAlbumArtViewGroupMLP.height = playerAlbumArtViewGroupOriginalHeight + viewMLP.bottomMargin;
+        								playerAlbumArtViewGroup.setLayoutParams(playerAlbumArtViewGroupMLP);
+        								playerAlbumArtViewGroupMLP = (ViewGroup.MarginLayoutParams) playerAlbumArtViewGroup.getLayoutParams();
+        							}
        	        			
-       						viewMLP.bottomMargin = 0;
-       					}
-       					if (viewMLP.rightMargin != 0) {
-       						viewMLP.rightMargin = 0;
-       					}
-       					view.setLayoutParams(viewMLP);
-           				viewMLP = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-   						log("(a) view.bottomMargin: " + viewMLP.bottomMargin);
-   						log("(a) view.rightMargin: " + viewMLP.rightMargin);
-   	       				log("(a) player_album_art_view_group.height: " + playerAlbumArtViewGroupMLP.height);
+        							viewMLP.bottomMargin = 0;
+        						}
+        						if (viewMLP.rightMargin != 0) {
+        							viewMLP.rightMargin = 0;
+        						}
+        						view.setLayoutParams(viewMLP);
+        						viewMLP = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        						log("(a) view.bottomMargin: " + viewMLP.bottomMargin);
+        						log("(a) view.rightMargin: " + viewMLP.rightMargin);
+        						log("(a) player_album_art_view_group.height: " + playerAlbumArtViewGroupMLP.height);
 
-       				}
+        					}
+        				} else {
+        					log("player_album_art_view_group view not found!");
+        				}
+        			} else {
+        				log("view not found!");
+        			}
 
         		}
 
