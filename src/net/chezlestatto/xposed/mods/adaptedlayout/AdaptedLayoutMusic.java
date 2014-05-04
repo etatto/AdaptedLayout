@@ -3,7 +3,6 @@ package net.chezlestatto.xposed.mods.adaptedlayout;
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewManager;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -18,18 +17,18 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
 
 	// Supported app
 	public static final String HK_APP_NAME = "WALKMAN";
-	public static final String HK_APP_VERSION = "8.3.A.0.2";
+	public static final String[] HK_APP_VERSION = { "8.3.A.0.2", "8.3.A.0.5" };
 	public static final String HK_PACKAGE_NAME = "com.sonyericsson.music";
 
 	// music view class, method & id
-	public static final String HK_CLASS_NAME_MUSIC = HK_PACKAGE_NAME + ".cv";
-	public static final String HK_METHOD_NAME_MUSIC = "a";
+	public static final String HK_CLASS_NAME_1 = HK_PACKAGE_NAME + ".cv";
+	public static final String HK_METHOD_NAME_11 = "a";
 	public static final int CONTENT_ID = 0x7f0e00da;
 	public static final int MINI_PLAYER_ID = 0x7f0e00db;
 	
 	// player view class & method
-	public static final String HK_CLASS_NAME_PLAYER = HK_PACKAGE_NAME + ".PlayerFragment";
-	public static final String HK_METHOD_NAME_PLAYER = "h";
+	public static final String HK_CLASS_NAME_2 = HK_PACKAGE_NAME + ".PlayerFragment";
+	public static final String HK_METHOD_NAME_21 = "h";
 	public static final int PLAYER_ALBUM_ART_VIEW_GROUP_ID = 0x7f0e005b;
 
 	private int playerAlbumArtViewGroupOriginalHeight;
@@ -40,30 +39,6 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
 		if (!resparam.packageName.equals(HK_PACKAGE_NAME))
 			return;
 
-		// music layout inflate hook
-	    resparam.res.hookLayout(HK_PACKAGE_NAME, "layout", "music", new XC_LayoutInflated() {
-
-	    	@Override
-	        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-	    		log(HK_PACKAGE_NAME + ".layout.music.inflate" + " hooked!");
-
-            	if (adaptMusicLayout) {
-
-            		// nav_bar_shade view
-            		try {
-            			View navBarShade = liparam.view.findViewById(liparam.res.getIdentifier("nav_bar_shade", "id", HK_PACKAGE_NAME));
-            			((ViewManager) navBarShade.getParent()).removeView(navBarShade);
-            			log("nav_bar_shade view removed!");
-            		} catch (Exception e) {
-            			log("nav_bar_shade view not found!");
-            		}
-
-            	}
-            	
-	        }
-
-	    }); 
-
 		// frag_player layout inflate hook
 	    resparam.res.hookLayout(HK_PACKAGE_NAME, "layout", "frag_player", new XC_LayoutInflated() {
 
@@ -71,15 +46,15 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
 	        public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
             	log(HK_PACKAGE_NAME + ".layout.frag_player.inflate" + " hooked!");
 
-            	if (adaptMusicLayout) {
-
-            		// player_album_art_view_group view
+            	// player_album_art_view_group view
+            	try {
             		View playerAlbumArtViewGroup = liparam.view.findViewById(liparam.res.getIdentifier("player_album_art_view_group", "id", HK_PACKAGE_NAME));
        				ViewGroup.MarginLayoutParams playerAlbumArtViewGroupMLP = (ViewGroup.MarginLayoutParams) playerAlbumArtViewGroup.getLayoutParams();
     				playerAlbumArtViewGroupOriginalHeight = playerAlbumArtViewGroupMLP.height;
     				log("player_album_art_view_group.height: " + playerAlbumArtViewGroupOriginalHeight);
-
-            	}
+            	} catch (Exception e) {
+           			log("player_album_art_view_group view not found!");
+           		}
 	        }
 
 	    }); 
@@ -92,11 +67,11 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
 			return;
 
 		// music view hook
-		XposedHelpers.findAndHookMethod(HK_CLASS_NAME_MUSIC, lpparam.classLoader, HK_METHOD_NAME_MUSIC, new XC_MethodHook() {
+		XposedHelpers.findAndHookMethod(HK_CLASS_NAME_1, lpparam.classLoader, HK_METHOD_NAME_11, new XC_MethodHook() {
 
             @Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            	log(HK_CLASS_NAME_MUSIC + "." + HK_METHOD_NAME_MUSIC + " hooked! (before)");
+            	log(HK_CLASS_NAME_1 + "." + HK_METHOD_NAME_11 + " hooked! (before)");
 
             	adaptMusicLayout = isMusicLayoutToBeAdapted((Activity) XposedHelpers.getObjectField(param.thisObject, "a"));
         		log("Adapt Music layout: " + adaptMusicLayout);
@@ -105,7 +80,7 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
             
             @Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-            	log(HK_CLASS_NAME_MUSIC + "." + HK_METHOD_NAME_MUSIC + " hooked! (after)");
+            	log(HK_CLASS_NAME_1 + "." + HK_METHOD_NAME_11 + " hooked! (after)");
             	
             	if (adaptMusicLayout) {
 
@@ -147,11 +122,11 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
 		});
 	
 		// player view hook
-		XposedHelpers.findAndHookMethod(HK_CLASS_NAME_PLAYER, lpparam.classLoader, HK_METHOD_NAME_PLAYER, new XC_MethodHook() {
+		XposedHelpers.findAndHookMethod(HK_CLASS_NAME_2, lpparam.classLoader, HK_METHOD_NAME_21, new XC_MethodHook() {
 
             @Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            	log(HK_CLASS_NAME_PLAYER + "." + HK_METHOD_NAME_PLAYER + " hooked! (before)");
+            	log(HK_CLASS_NAME_2 + "." + HK_METHOD_NAME_21 + " hooked! (before)");
 
             	adaptMusicLayout = isMusicLayoutToBeAdapted((Activity) XposedHelpers.getObjectField(param.thisObject, "a"));
         		log("Adapt Music layout: " + adaptMusicLayout);
@@ -160,7 +135,7 @@ public class AdaptedLayoutMusic extends AdaptedLayout implements IXposedHookInit
             	
             @Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-            	log(HK_CLASS_NAME_PLAYER + "." + HK_METHOD_NAME_PLAYER + " hooked! (after)");
+            	log(HK_CLASS_NAME_2 + "." + HK_METHOD_NAME_21 + " hooked! (after)");
             	
         		if (adaptMusicLayout) {
 

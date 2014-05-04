@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/pref_options_title" android:key="pref_options">
-        <CheckBoxPreference android:key="pref_enable_album" android:defaultValue="false" android:title="@string/pref_enable_album" android:enabled="false" android:summary="WIP"/>
-        <CheckBoxPreference android:key="pref_enable_music" android:defaultValue="false" android:title="@string/pref_enable_music"/>
-        <CheckBoxPreference android:key="pref_enable_video" android:defaultValue="false" android:title="@string/pref_enable_video" android:enabled="false" android:summary="WIP"/>
+        <CheckBoxPreference android:key="pref_enable_album" android:defaultValue="false" android:title="@string/pref_enable_album_title" />
+<!--         <CheckBoxPreference android:key="pref_enable_calculator" android:defaultValue="false" android:title="@string/pref_enable_calculator_title" android:enabled="false" android:summary="WIP"/> -->
+        <CheckBoxPreference android:key="pref_enable_music" android:defaultValue="false" android:title="@string/pref_enable_music_title"/>
+<!--         <CheckBoxPreference android:key="pref_enable_video" android:defaultValue="false" android:title="@string/pref_enable_video_title" android:enabled="false" android:summary="WIP"/> -->
         <CheckBoxPreference android:key="pref_enable_gb_ed_support" android:defaultValue="false" android:title="@string/pref_enable_gb_ed_support_title"/>
         <CheckBoxPreference android:key="pref_enable_logging" android:defaultValue="false" android:title="@string/pref_enable_logging_title"/>
         </PreferenceCategory>
